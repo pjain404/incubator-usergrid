@@ -32,10 +32,10 @@ import org.apache.usergrid.settings.{Utils, Headers, Settings}
 
 /**
  * PostCustomEntitySimulation - creates lots of custom entities
- * 
+ *
  * Run this way:
  * mvn gatling:execute -DrampTime=10 -DmaxPossibleUsers=10 -Dduration=120 -Dorg=yourorgname -Dapp=sandbox -Dbaseurl=https://api.usergrid.com -DadminUser=yourusername -DadminPassword='yourpassword' -Dgatling.simulationClass=org.apache.usergrid.simulations.PostCustomEntitySimulation -DcollectionType=yourcollection
- * 
+ *
  *
  */
 class PostCustomEntitySimulation extends Simulation {
@@ -59,8 +59,8 @@ class PostCustomEntitySimulation extends Simulation {
 
   val scnToRun = scenario("POST custom entities")
     .feed(feeder)
-    .exec(EntityScenarios.postEntity)
-  
+    .exec(forever(EntityScenarios.postEntity))
+
   /*
   val scnToRun = scenario("POST custom entities")
     .feed(feeder)
