@@ -254,3 +254,9 @@ echo ${JSON_PAYLOAD} > /var/lib/tomcat7/webapps/portal/graphite.json
 # tag last so we can see in the console that the script ran to completion
 cd /usr/share/usergrid/scripts
 groovy tag_instance.groovy
+
+
+# install pip for bulk loader used for loading woolsworth
+cd ~
+sudo apt-get install python-pip
+sudo pip install boto
