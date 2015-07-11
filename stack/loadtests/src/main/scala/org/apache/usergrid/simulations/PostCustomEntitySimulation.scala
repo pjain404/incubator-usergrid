@@ -57,9 +57,13 @@ class PostCustomEntitySimulation extends Simulation {
   val feeder = FeederGenerator.generateCustomEntityInfinite(0)
   val httpConf = Settings.httpConf
 
+  // Creates a scenario where the feeder feeds Custom Entities to be posted. Forever ensures that the scenario is run continuously.
   val scnToRun = scenario("POST custom entities")
-    .feed(feeder)
-    .exec(forever(EntityScenarios.postEntity))
+    .forever(
+    feed(feeder)
+    .exec(EntityScenarios.postEntity)
+    )
+
 
   /*
   val scnToRun = scenario("POST custom entities")
@@ -69,12 +73,10 @@ class PostCustomEntitySimulation extends Simulation {
     } {
       exec(EntityScenarios.postEntity)
     }
-*/
+ */
 
-
-  setUp(scnToRun.inject(
-    rampUsers(Settings.maxPossibleUsers) over Settings.rampTime,
-    constantUsersPerSec(Settings.maxPossibleUsers) during Settings.duration
+  // Injects maxPossible users at once in the start and then each user keeps running the scnToRun for the duration specified
+  setUp(scnToRun.inject(atOnceUsers(Settings.maxPossibleUsers)
   ).protocols(httpConf)).maxDuration(Settings.duration)
 
 }

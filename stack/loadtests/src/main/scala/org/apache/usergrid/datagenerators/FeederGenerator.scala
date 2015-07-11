@@ -147,7 +147,7 @@
 
 
    /**
-    * Generate users forever
+    * Generate custom users
     * @param seed The seed
     * @return
     */
@@ -155,10 +155,21 @@
      //val rod = "rod"
      val userFeeder = Iterator.from(seed).map(i=>EntityDataGenerator.generateCustomEntity())
      return userFeeder
-   } 
-   
+   }
+
+     /**
+      * Generate custom queries
+      * @param seed The seed
+      * @return
+      */
+    def generateCustomQuery(seed:Int): Iterator[Map[String, String]] = {
+        //val rod = "rod"
+        val queryFeeder = Iterator.from(seed).map(i=>EntityDataGenerator.generateCustomQuery())
+        return queryFeeder
+    }
+
    def testFeeder(seed:Int): Iterator[Map[String, String]] = {
-     var entity: Map[String, String] = EntityDataGenerator.generateCustomEntity();
+     val entity: Map[String, String] = EntityDataGenerator.generateCustomEntity();
      Map("entity" -> entity)
      val userFeeder = Iterator.from(seed).map(i=>EntityDataGenerator.generateCustomEntity())
      return userFeeder

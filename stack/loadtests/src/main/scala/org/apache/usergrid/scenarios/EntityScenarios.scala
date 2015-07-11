@@ -70,4 +70,13 @@ object EntityScenarios {
       .check(status.is(200))
   )
 
+  val getRecommendation = exec(
+    http("GET recommendation entity")
+      .get(Settings.baseAppUrl+"/"+Settings.collectionType)
+      .queryParam("ql","""${entity}""")
+      .queryParam("limit","10")
+      .headers(Headers.jsonAnonymous)
+      .check(status.is(200))
+  )
+
 }

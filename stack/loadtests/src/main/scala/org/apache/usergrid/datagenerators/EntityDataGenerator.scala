@@ -17,10 +17,11 @@
  package org.apache.usergrid.datagenerators
 
  import java.util.UUID
-
+ import scala.collection.mutable
+ import scala.util.Random
  import org.apache.usergrid.settings.Utils
 
- import scala.collection.mutable.ArrayBuffer
+ import scala.collection.mutable.{ListBuffer, ArrayBuffer}
  import scala.util.parsing.json.JSONObject
 
  object EntityDataGenerator {
@@ -62,27 +63,58 @@
     )
   }
 
-  def generateCustomEntity(): Map[String,String] = {
+//     def generateCustomEntity(): Map[String,String] = {
+//
+//         var entity: Map[String, String] = Map(
+//                    // "name" -> "fdsa",
+//                    "address" -> Utils.generateRandomInt(10000, 1000000).toString,
+//            "city" -> Utils.generateRandomInt(10000, 1000000).toString,
+//         "state" -> Utils.generateRandomInt(10000, 1000000).toString,
+//         "zip" -> Utils.generateRandomInt(10000, 1000000).toString,
+//         "phone" -> Utils.generateRandomInt(10000, 1000000).toString,
+//         "businessname" -> Utils.generateRandomInt(0, 1).toString,
+//         "menu" -> Utils.generateRandomInt(1, 1000000).toString,
+//         "specials" -> Utils.generateRandomInt(1, 1000000).toString,
+//         "profile" -> "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+//         "description" -> "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+//         "directions" -> Utils.generateRandomInt(18, 65).toString,
+//         "atmosphere" -> Utils.generateRandomInt(48, 84).toString,
+//         "bar" -> Utils.generateRandomInt(120, 350).toString,
+//         "tables" -> Utils.generateRandomInt(50, 100000).toString,
+//         "outdoor" -> Utils.generateRandomInt(50, 100000).toString
+//         )
+//         return Map("entity" -> new JSONObject(entity).toString())
+//     }
 
-    var entity: Map[String, String] = Map(
-      // "name" -> "fdsa",
-      "address" -> Utils.generateRandomInt(10000, 1000000).toString,
-      "city" -> Utils.generateRandomInt(10000, 1000000).toString,
-      "state" -> Utils.generateRandomInt(10000, 1000000).toString,
-      "zip" -> Utils.generateRandomInt(10000, 1000000).toString,
-      "phone" -> Utils.generateRandomInt(10000, 1000000).toString,
-      "businessname" -> Utils.generateRandomInt(0, 1).toString,
-      "menu" -> Utils.generateRandomInt(1, 1000000).toString,
-      "specials" -> Utils.generateRandomInt(1, 1000000).toString,
-      "profile" -> "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      "description" -> "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-      "directions" -> Utils.generateRandomInt(18, 65).toString,
-      "atmosphere" -> Utils.generateRandomInt(48, 84).toString,
-      "bar" -> Utils.generateRandomInt(120, 350).toString,
-      "tables" -> Utils.generateRandomInt(50, 100000).toString,
-      "outdoor" -> Utils.generateRandomInt(50, 100000).toString
-      )
-    return Map("entity" -> new JSONObject(entity).toString())
+   // Generates a custom entity which is used by the PostCustomEntitySimulation
+   def generateCustomEntity(): Map[String,String] = {
 
-  }
+     val expired=List("True","False")
+     val entities = new StringBuilder
+     entities.append("[")
+
+     for (a <-1 to 1000) {
+       val eachEntity: Map[String, String] = Map(
+         "username" -> "user".concat(Utils.generateRandomInt(1, 500000).toString),
+         "score" -> Utils.generateRandomInt(1, 100).toString,
+         "isActive" -> expired(Random.nextInt(expired.size)),
+         "offer" -> "offer".concat(Utils.generateRandomInt(1, 20).toString)
+       )
+       entities.append(new JSONObject(eachEntity).toString()).append(",")
+     }
+     val lastComma = entities.lastIndexOf(",")
+     entities.replace(lastComma,lastComma,"]")
+
+     return Map("entity" -> entities.toString())
+
+   }
+
+   // Geneates a custom Query which is used by the GetEntitySimulation
+   def generateCustomQuery(): Map[String,String] = {
+
+     val query =  "select * where username='user".concat(Utils.generateRandomInt(1, 500000).toString).concat("' and isActive='true' order by score desc")
+
+     return Map("entity" -> query)
+
+   }
 }

@@ -19,14 +19,21 @@
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
  import org.apache.usergrid.datagenerators.FeederGenerator
- import org.apache.usergrid.scenarios.UserScenarios
- import org.apache.usergrid.settings.Settings
- import scala.concurrent.duration._
+ import org.apache.usergrid.scenarios.{EntityScenarios, TokenScenarios}
+ import org.apache.usergrid.settings.{Utils, Headers, Settings}
+
 
 class GetEntitySimulation extends Simulation {
 
   // Target settings
   val httpConf = Settings.httpConf
+  if(!Settings.skipSetup) {
+    println("Begin setup")
+    exec(TokenScenarios.getManagementToken)
+    println("End Setup")
+  }else{
+    println("Skipping Setup")
+  }
 
   // Simulation settings
   val numUsers:Int = Settings.numUsers
@@ -34,11 +41,15 @@ class GetEntitySimulation extends Simulation {
   val rampTime:Int = Settings.rampTime
   val throttle:Int = Settings.throttle
 
-  val feeder = FeederGenerator.generateEntityNameFeeder("user", numEntities)
+  val feeder = FeederGenerator.generateCustomQuery(0)
 
-  val scnToRun = scenario("GET entity")
-    .exec(UserScenarios.getRandomUser)
+    // Creates a scenario where the feeder generates Custom GET queries. Forever ensures that the scenario is run continuously.
+    val scnToRun = scenario("Get entity")
+        .forever(
+        feed(feeder)
+        .exec(EntityScenarios.getRecommendation))
 
-  setUp(scnToRun.inject(atOnceUsers(numUsers)).throttle(reachRps(throttle) in (rampTime.seconds)).protocols(httpConf)).maxDuration(Settings.duration)
-
+    // Injects maxPossible users at once in the start and then each user keeps running the scnToRun for the duration specified
+    setUp(scnToRun.inject(atOnceUsers(Settings.maxPossibleUsers)
+  ).protocols(httpConf)).maxDuration(Settings.duration)
 }
